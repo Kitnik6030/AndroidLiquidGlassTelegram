@@ -4,12 +4,12 @@ plugins {
 }
 
 android {
-    namespace = "com.kitnik.liquidgram"
+    namespace = "com.kyant.backdrop.catalog"
     compileSdk = 37
     buildToolsVersion = "37.0.0"
 
     defaultConfig {
-        applicationId = "com.kitnik.liquidgram"
+        applicationId = "com.kyant.backdrop.catalog"
         minSdk = 23
         targetSdk = 37
         versionCode = 1
