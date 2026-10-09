@@ -1,93 +1,255 @@
+
 package com.kyant.backdrop.catalog.destinations
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.displayCutoutPadding
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kyant.backdrop.catalog.CatalogDestination
+
+private val Background = Color(0xFFF5F5F9)
+private val Blue = Color(0xFF1687F8)
+private val Secondary = Color(0xFF8E8E93)
+
+private data class Chat(
+    val name: String,
+    val message: String,
+    val time: String,
+    val avatar: String,
+    val color: Color,
+    val unread: Int = 0
+)
+
+private val demoChats = listOf(
+    Chat("Избранное", "Заметки и сообщения", "12:40", "★", Color(0xFF1687F8)),
+    Chat("Александр", "Ты уже посмотрел?", "12:32", "А", Color(0xFF9274D8), 2),
+    Chat("Друзья", "Максим: всем привет", "11:58", "Д", Color(0xFF4DAA87), 5),
+    Chat("Разработка", "Новый коммит готов", "10:41", "К", Color(0xFFE69B45)),
+    Chat("Мама", "Не забудь написать", "Вчера", "М", Color(0xFFE47791)),
+    Chat("Новости", "Последние обновления", "Вчера", "Н", Color(0xFF558DD9)),
+    Chat("Игры", "Кто сегодня играет?", "Вт", "И", Color(0xFF7F9C58))
+)
 
 @Composable
-fun HomeContent(onNavigate: (CatalogDestination) -> Unit) {
-    val isLightTheme = !isSystemInDarkTheme()
-    val contentColor = if (isLightTheme) Color.Black else Color.White
-
+fun HomeContent(onNavigate: (com.kyant.backdrop.catalog.CatalogDestination) -> Unit) {
     Column(
-        Modifier
-            .verticalScroll(rememberScrollState())
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Background)
             .systemBarsPadding()
-            .displayCutoutPadding()
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(16f.dp)
     ) {
-        BasicText(
-            "Backdrop Catalog",
-            Modifier.padding(16f.dp, 40f.dp, 16f.dp, 16f.dp),
-            style = TextStyle(contentColor, 28f.sp, FontWeight.Medium)
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            BasicText(
+                "Изменить",
+                style = TextStyle(color = Blue, fontSize = 16.sp)
+            )
+            BasicText(
+                "Telegram",
+                style = TextStyle(
+                    color = Color.Black,
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+            BasicText(
+                "＋",
+                style = TextStyle(color = Blue, fontSize = 28.sp)
+            )
+        }
 
-        Column {
-            Subtitle("Liquid glass components")
-            ListItem({ onNavigate(CatalogDestination.Buttons) }, "Buttons")
-            ListItem({ onNavigate(CatalogDestination.Toggle) }, "Toggle")
-            ListItem({ onNavigate(CatalogDestination.Slider) }, "Slider")
-            ListItem({ onNavigate(CatalogDestination.BottomTabs) }, "Bottom tabs")
-            ListItem({ onNavigate(CatalogDestination.Dialog) }, "Dialog")
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .clip(RoundedCornerShape(14.dp))
+                .background(Color(0xFFE7E7ED))
+                .padding(horizontal = 12.dp, vertical = 11.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            BasicText("⌕", style = TextStyle(color = Secondary, fontSize = 22.sp))
+            Spacer(Modifier.width(8.dp))
+            BasicText("Поиск", style = TextStyle(color = Secondary, fontSize = 16.sp))
+        }
 
-            Subtitle("System UIs")
-            ListItem({ onNavigate(CatalogDestination.LockScreen) }, "Lock screen (SDF texture)")
-            ListItem({ onNavigate(CatalogDestination.ControlCenter) }, "Control center")
-            ListItem({ onNavigate(CatalogDestination.Magnifier) }, "Magnifier")
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            BasicText(
+                "Все чаты",
+                style = TextStyle(
+                    color = Color.Black,
+                    fontSize = 26.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+            Spacer(Modifier.weight(1f))
+            BasicText("Изменить", style = TextStyle(color = Blue, fontSize = 15.sp))
+        }
 
-            Subtitle("Experiments")
-            ListItem({ onNavigate(CatalogDestination.GlassPlayground) }, "Glass playground")
-            ListItem({ onNavigate(CatalogDestination.AdaptiveLuminanceGlass) }, "Adaptive luminance glass")
-            ListItem({ onNavigate(CatalogDestination.ProgressiveBlur) }, "Progressive blur")
-            ListItem({ onNavigate(CatalogDestination.ScrollContainer) }, "Scroll container")
-            ListItem({ onNavigate(CatalogDestination.LazyScrollContainer) }, "Lazy scroll container")
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 12.dp)
+                .clip(RoundedCornerShape(20.dp))
+                .background(Color.White)
+        ) {
+            demoChats.forEachIndexed { index, chat ->
+                ChatRow(chat)
+
+                if (index != demoChats.lastIndex) {
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(start = 82.dp)
+                            .height(0.5.dp)
+                            .background(Color(0xFFE5E5EA))
+                    )
+                }
+            }
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 10.dp),
+            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            BottomTab("☷", "Контакты")
+            BottomTab("◷", "Звонки")
+            BottomTab("●", "Чаты", selected = true)
+            BottomTab("⚙", "Настройки")
         }
     }
 }
 
 @Composable
-private fun Subtitle(label: String) {
-    BasicText(
-        label,
-        Modifier
-            .padding(16f.dp, 24f.dp, 16f.dp, 8f.dp)
-            .fillMaxWidth(),
-        style = TextStyle(Color(0xFF0088FF), 15f.sp, FontWeight.Medium)
-    )
+private fun ChatRow(chat: Chat) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { }
+            .padding(horizontal = 12.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(54.dp)
+                .clip(CircleShape)
+                .background(chat.color),
+            contentAlignment = Alignment.Center
+        ) {
+            BasicText(
+                chat.avatar,
+                style = TextStyle(
+                    color = Color.White,
+                    fontSize = 25.sp,
+                    fontWeight = FontWeight.Medium,
+                    textAlign = TextAlign.Center
+                )
+            )
+        }
+
+        Spacer(Modifier.width(12.dp))
+
+        Column(modifier = Modifier.weight(1f)) {
+            BasicText(
+                chat.name,
+                style = TextStyle(
+                    color = Color(0xFF17171A),
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            )
+            Spacer(Modifier.height(5.dp))
+            BasicText(
+                chat.message,
+                style = TextStyle(color = Secondary, fontSize = 14.sp)
+            )
+        }
+
+        Spacer(Modifier.width(6.dp))
+
+        Column(horizontalAlignment = Alignment.End) {
+            BasicText(
+                chat.time,
+                style = TextStyle(color = Secondary, fontSize = 12.sp)
+            )
+
+            if (chat.unread > 0) {
+                Spacer(Modifier.height(6.dp))
+                Box(
+                    modifier = Modifier
+                        .defaultMinSize(minWidth = 21.dp, minHeight = 21.dp)
+                        .clip(CircleShape)
+                        .background(Blue)
+                        .padding(horizontal = 6.dp, vertical = 2.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    BasicText(
+                        chat.unread.toString(),
+                        style = TextStyle(
+                            color = Color.White,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Composable
-private fun ListItem(
-    onClick: () -> Unit,
-    label: String
+private fun BottomTab(
+    symbol: String,
+    label: String,
+    selected: Boolean = false
 ) {
-    val isLightTheme = !isSystemInDarkTheme()
-    val contentColor = if (isLightTheme) Color.Black else Color.White
-
-    BasicText(
-        label,
-        Modifier
-            .clickable(onClick = onClick)
-            .padding(16f.dp)
-            .fillMaxWidth(),
-        style = TextStyle(contentColor, 17f.sp)
-    )
+    Column(
+        modifier = Modifier
+            .clickable { }
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        BasicText(
+            symbol,
+            style = TextStyle(
+                color = if (selected) Blue else Secondary,
+                fontSize = 22.sp
+            )
+        )
+        Spacer(Modifier.height(3.dp))
+        BasicText(
+            label,
+            style = TextStyle(
+                color = if (selected) Blue else Secondary,
+                fontSize = 11.sp
+            )
+        )
+    }
 }
