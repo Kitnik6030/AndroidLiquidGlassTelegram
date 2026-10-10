@@ -3,21 +3,22 @@ package com.kyant.backdrop.catalog.destinations
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
 import com.kyant.backdrop.backdrops.layerBackdrop
 import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 import com.kyant.backdrop.drawBackdrop
@@ -25,25 +26,19 @@ import com.kyant.backdrop.effects.blur
 import com.kyant.backdrop.effects.lens
 import com.kyant.backdrop.effects.vibrancy
 import com.kyant.shapes.Capsule
+import com.kyant.backdrop.catalog.CatalogDestination
 
-private val Background = Color(0xFFF5F5F7)
+private val Background = Color(0xFFF4F4F7)
 private val MainText = Color(0xFF171719)
 private val SecondaryText = Color(0xFF85858B)
-private val Accent = Color(0xFF2488FF)
+private val Accent = Color(0xFF0088FF)
 
 @Composable
-fun HomeContent() {
-    var selectedTab by remember { mutableIntStateOf(0) }
-
+fun HomeContent(onNavigate: (CatalogDestination) -> Unit) {
+    var selectedTab by remember { mutableIntStateOf(2) }
     val backdrop = rememberLayerBackdrop()
 
-    val titles = listOf(
-        "Контакты",
-        "Звонки",
-        "Чаты",
-        "Настройки"
-    )
-
+    val titles = listOf("Контакты", "Звонки", "Чаты", "Настройки")
     val symbols = listOf("♙", "☎", "☷", "⚙")
 
     Box(
@@ -51,14 +46,32 @@ fun HomeContent() {
             .fillMaxSize()
             .background(Background)
     ) {
-        // Содержимое, которое будет видно сквозь стекло.
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .layerBackdrop(backdrop)
+                .pointerInput(selectedTab) {
+                    var totalDrag = 0f
+                    detectHorizontalDragGestures(
+                        onHorizontalDrag = { _, amount ->
+                            totalDrag += amount
+                        },
+                        onDragEnd = {
+                            if (totalDrag < -80f) {
+                                selectedTab = (selectedTab + 1).coerceAtMost(3)
+                            } else if (totalDrag > 80f) {
+                                selectedTab = (selectedTab - 1).coerceAtLeast(0)
+                            }
+                            totalDrag = 0f
+                        },
+                        onDragCancel = {
+                            totalDrag = 0f
+                        }
+                    )
+                }
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp)
-                .padding(top = 24.dp, bottom = 120.dp)
+                .padding(top = 32.dp, bottom = 110.dp)
         ) {
             BasicText(
                 text = titles[selectedTab],
@@ -72,51 +85,39 @@ fun HomeContent() {
             Spacer(Modifier.height(22.dp))
 
             when (selectedTab) {
-                0 -> {
-                    repeat(12) { index ->
-                        ContactRow(
-                            title = "Контакт ${index + 1}",
-                            subtitle = "был(а) недавно"
-                        )
-                    }
+                0 -> repeat(12) { index ->
+                    ContactRow(
+                        "Контакт ${index + 1}",
+                        "был(а) недавно"
+                    )
                 }
 
-                1 -> {
-                    repeat(8) { index ->
-                        ContactRow(
-                            title = "Контакт ${index + 1}",
-                            subtitle = "Недавний звонок"
-                        )
-                    }
+                1 -> repeat(8) { index ->
+                    ContactRow(
+                        "Контакт ${index + 1}",
+                        "Недавний звонок"
+                    )
                 }
 
-                2 -> {
-                    repeat(12) { index ->
-                        ContactRow(
-                            title = "Собеседник ${index + 1}",
-                            subtitle = "Последнее сообщение"
-                        )
-                    }
+                2 -> repeat(12) { index ->
+                    ContactRow(
+                        "Собеседник ${index + 1}",
+                        "Последнее сообщение"
+                    )
                 }
 
-                3 -> {
-                    listOf(
-                        "Оформление",
-                        "Уведомления",
-                        "Конфиденциальность",
-                        "Данные и память",
-                        "О приложении"
-                    ).forEach { setting ->
-                        ContactRow(
-                            title = setting,
-                            subtitle = ""
-                        )
-                    }
+                3 -> listOf(
+                    "Оформление",
+                    "Уведомления",
+                    "Конфиденциальность",
+                    "Данные и память",
+                    "О приложении"
+                ).forEach { setting ->
+                    ContactRow(setting, "")
                 }
             }
         }
 
-        // Стеклянная панель создаётся непосредственно через Backdrop.
         Row(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -128,14 +129,14 @@ fun HomeContent() {
                     shape = { Capsule() },
                     effects = {
                         vibrancy()
-                        blur(12.dp.toPx())
-                        lens(18.dp.toPx(), 24.dp.toPx())
+                        blur(8.dp.toPx())
+                        lens(24.dp.toPx(), 24.dp.toPx())
                     },
                     onDrawSurface = {
-                        drawRect(Color.White.copy(alpha = 0.58f))
+                        drawRect(Color.White.copy(alpha = 0.45f))
                     }
                 )
-                .padding(5.dp),
+                .padding(4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             titles.forEachIndexed { index, title ->
@@ -144,11 +145,11 @@ fun HomeContent() {
                 Column(
                     modifier = Modifier
                         .weight(1f)
-                        .height(62.dp)
+                        .height(60.dp)
                         .clip(Capsule())
                         .background(
                             if (selected) {
-                                Color.White.copy(alpha = 0.72f)
+                                Color.White.copy(alpha = 0.65f)
                             } else {
                                 Color.Transparent
                             }
@@ -156,7 +157,7 @@ fun HomeContent() {
                         .clickable {
                             selectedTab = index
                         }
-                        .padding(vertical = 8.dp),
+                        .padding(vertical = 7.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
@@ -233,7 +234,6 @@ private fun ContactRow(
 
             if (subtitle.isNotEmpty()) {
                 Spacer(Modifier.height(4.dp))
-
                 BasicText(
                     text = subtitle,
                     style = TextStyle(
