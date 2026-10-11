@@ -26,6 +26,7 @@ import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 import com.kyant.backdrop.catalog.CatalogDestination
 import com.kyant.backdrop.catalog.components.LiquidBottomTab
 import com.kyant.backdrop.catalog.components.LiquidBottomTabs
+import com.kyant.backdrop.catalog.components.LiquidMessageInput
 
 private val Background = Color(0xFFF4F4F7)
 private val MainText = Color(0xFF171719)
