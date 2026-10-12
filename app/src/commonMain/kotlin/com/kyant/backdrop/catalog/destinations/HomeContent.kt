@@ -1,4 +1,3 @@
-
 package com.kyant.backdrop.catalog.destinations
 
 import androidx.compose.foundation.background
@@ -20,7 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-import com.kyant.backdrop.Backdrop
+import com.kyant.backdrop.backdrops.LayerBackdrop
 import com.kyant.backdrop.backdrops.layerBackdrop
 import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 import com.kyant.backdrop.catalog.CatalogDestination
@@ -267,7 +266,7 @@ private fun ContactRow(
 @Composable
 private fun ChatScreen(
     name: String,
-    backdrop: Backdrop,
+    backdrop: LayerBackdrop,
     onBack: () -> Unit
 ) {
     val messages = remember(name) {
@@ -285,13 +284,11 @@ private fun ChatScreen(
             .fillMaxSize()
             .background(Color.Black)
     ) {
-        // Фон, который захватывает Backdrop
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .layerBackdrop(backdrop)
         ) {
-            // Хедер
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -349,7 +346,6 @@ private fun ChatScreen(
                 }
             }
 
-            // Сообщения
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -412,7 +408,6 @@ private fun ChatScreen(
             }
         }
 
-        // Стеклянное поле поверх фона
         LiquidMessageInput(
             backdrop = backdrop,
             onSend = { text ->
