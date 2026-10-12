@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,12 +36,14 @@ fun LiquidMessageInput(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+        // Кнопка вложений
         GlassCircleButton(
             backdrop = backdrop,
             symbol = "⌁",
             onClick = {}
         )
 
+        // Основное поле ввода
         Row(
             modifier = Modifier
                 .weight(1f)
@@ -57,7 +60,7 @@ fun LiquidMessageInput(
                         drawRect(Color(0xFF202020).copy(alpha = 0.78f))
                     }
                 )
-                .padding(start = 16.dp, end = 12.dp),
+                .padding(horizontal = 16.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             BasicTextField(
@@ -68,9 +71,7 @@ fun LiquidMessageInput(
                     color = Color.White,
                     fontSize = 17.sp
                 ),
-                cursorBrush = androidx.compose.ui.graphics.SolidColor(
-                    Color(0xFF4D9CFF)
-                ),
+                cursorBrush = SolidColor(Color(0xFF4D9CFF)),
                 singleLine = true,
                 decorationBox = { innerTextField ->
                     Box {
@@ -90,9 +91,10 @@ fun LiquidMessageInput(
 
             Spacer(Modifier.width(8.dp))
 
+            // Кнопка стикеров
             BasicText(
                 text = "◔",
-                modifier = Modifier.clickable { },
+                modifier = Modifier.clickable {},
                 style = TextStyle(
                     color = Color(0xFFAAAAAA),
                     fontSize = 27.sp
@@ -100,6 +102,7 @@ fun LiquidMessageInput(
             )
         }
 
+        // Микрофон меняется на отправку, если есть текст
         GlassCircleButton(
             backdrop = backdrop,
             symbol = if (text.isBlank()) "♩" else "➤",
