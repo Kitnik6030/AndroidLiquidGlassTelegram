@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+import com.kyant.backdrop.Backdrop
 import com.kyant.backdrop.backdrops.layerBackdrop
 import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 import com.kyant.backdrop.catalog.CatalogDestination
@@ -28,8 +28,8 @@ import com.kyant.backdrop.catalog.components.LiquidBottomTab
 import com.kyant.backdrop.catalog.components.LiquidBottomTabs
 import com.kyant.backdrop.catalog.components.LiquidMessageInput
 
-private val Background = Color(0xFFF4F4F7)
-private val MainText = Color(0xFF171719)
+private val Background = Color(0xFF000000)
+private val MainText = Color(0xFFFFFFFF)
 private val SecondaryText = Color(0xFF85858B)
 private val Accent = Color(0xFF0088FF)
 
@@ -45,12 +45,19 @@ fun HomeContent(onNavigate: (CatalogDestination) -> Unit) {
 
     val backdrop = rememberLayerBackdrop()
 
-    val titles = listOf("Контакты", "Звонки", "Чаты", "Настройки")
+    val titles = listOf(
+        "Контакты",
+        "Звонки",
+        "Чаты",
+        "Настройки"
+    )
+
     val symbols = listOf("♙", "☎", "☷", "⚙")
 
     if (openedChat != null) {
         ChatScreen(
             name = openedChat!!,
+            backdrop = backdrop,
             onBack = { openedChat = null }
         )
         return
@@ -74,13 +81,17 @@ fun HomeContent(onNavigate: (CatalogDestination) -> Unit) {
                         },
                         onDragEnd = {
                             if (totalDrag < -80f) {
-                                selectedTab = (selectedTab + 1).coerceAtMost(3)
+                                selectedTab =
+                                    (selectedTab + 1).coerceAtMost(3)
                             } else if (totalDrag > 80f) {
-                                selectedTab = (selectedTab - 1).coerceAtLeast(0)
+                                selectedTab =
+                                    (selectedTab - 1).coerceAtLeast(0)
                             }
                             totalDrag = 0f
                         },
-                        onDragCancel = { totalDrag = 0f }
+                        onDragCancel = {
+                            totalDrag = 0f
+                        }
                     )
                 }
                 .verticalScroll(rememberScrollState())
@@ -163,7 +174,11 @@ fun HomeContent(onNavigate: (CatalogDestination) -> Unit) {
                     BasicText(
                         text = symbols[index],
                         style = TextStyle(
-                            color = if (selectedTab == index) Accent else SecondaryText,
+                            color = if (selectedTab == index) {
+                                Accent
+                            } else {
+                                SecondaryText
+                            },
                             fontSize = 22.sp
                         )
                     )
@@ -171,7 +186,11 @@ fun HomeContent(onNavigate: (CatalogDestination) -> Unit) {
                     BasicText(
                         text = title,
                         style = TextStyle(
-                            color = if (selectedTab == index) Accent else SecondaryText,
+                            color = if (selectedTab == index) {
+                                Accent
+                            } else {
+                                SecondaryText
+                            },
                             fontSize = 10.sp,
                             fontWeight = if (selectedTab == index) {
                                 FontWeight.SemiBold
@@ -197,7 +216,7 @@ private fun ContactRow(
             .fillMaxWidth()
             .padding(bottom = 12.dp)
             .clip(RoundedCornerShape(20.dp))
-            .background(Color.White.copy(alpha = 0.88f))
+            .background(Color(0xFF191919))
             .clickable(onClick = onClick)
             .padding(14.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -206,13 +225,13 @@ private fun ContactRow(
             modifier = Modifier
                 .size(48.dp)
                 .clip(RoundedCornerShape(24.dp))
-                .background(Color(0xFFE0E8F5)),
+                .background(Color(0xFF30343A)),
             contentAlignment = Alignment.Center
         ) {
             BasicText(
                 text = title.take(1),
                 style = TextStyle(
-                    color = Color(0xFF375A8A),
+                    color = Color.White,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Medium
                 )
@@ -248,6 +267,7 @@ private fun ContactRow(
 @Composable
 private fun ChatScreen(
     name: String,
+    backdrop: Backdrop,
     onBack: () -> Unit
 ) {
     val messages = remember(name) {
@@ -258,190 +278,152 @@ private fun ChatScreen(
         )
     }
 
-    var input by remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF3F3F7))
+            .background(Color.Black)
     ) {
-        // Хедер
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.White.copy(alpha = 0.96f))
-                .padding(horizontal = 12.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            BasicText(
-                text = "‹",
-                modifier = Modifier
-                    .clickable(onClick = onBack)
-                    .padding(horizontal = 10.dp, vertical = 2.dp),
-                style = TextStyle(
-                    color = Accent,
-                    fontSize = 34.sp
-                )
-            )
-
-            Box(
-                modifier = Modifier
-                    .size(44.dp)
-                    .clip(RoundedCornerShape(50))
-                    .background(Color(0xFFDCE8FA)),
-                contentAlignment = Alignment.Center
-            ) {
-                BasicText(
-                    text = name.take(1),
-                    style = TextStyle(
-                        color = Color(0xFF315B91),
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                )
-            }
-
-            Spacer(Modifier.width(12.dp))
-
-            Column {
-                BasicText(
-                    text = name,
-                    style = TextStyle(
-                        color = MainText,
-                        fontSize = 17.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                )
-
-                BasicText(
-                    text = "был(а) недавно",
-                    style = TextStyle(
-                        color = SecondaryText,
-                        fontSize = 12.sp
-                    )
-                )
-            }
-        }
-
-        // История сообщений
+        // Фон, который захватывает Backdrop
         Column(
             modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .verticalScroll(scrollState)
-                .padding(horizontal = 12.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .fillMaxSize()
+                .layerBackdrop(backdrop)
         ) {
-            messages.forEach { message ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = if (message.mine) {
-                        Arrangement.End
-                    } else {
-                        Arrangement.Start
-                    }
+            // Хедер
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFF111111))
+                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                BasicText(
+                    text = "‹",
+                    modifier = Modifier
+                        .clickable(onClick = onBack)
+                        .padding(horizontal = 10.dp, vertical = 2.dp),
+                    style = TextStyle(
+                        color = Accent,
+                        fontSize = 34.sp
+                    )
+                )
+
+                Box(
+                    modifier = Modifier
+                        .size(44.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(Color(0xFF30343A)),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .widthIn(max = 290.dp)
-                            .clip(
-                                RoundedCornerShape(
-                                    topStart = 18.dp,
-                                    topEnd = 18.dp,
-                                    bottomStart = if (message.mine) 18.dp else 5.dp,
-                                    bottomEnd = if (message.mine) 5.dp else 18.dp
+                    BasicText(
+                        text = name.take(1),
+                        style = TextStyle(
+                            color = Color.White,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    )
+                }
+
+                Spacer(Modifier.width(12.dp))
+
+                Column {
+                    BasicText(
+                        text = name,
+                        style = TextStyle(
+                            color = MainText,
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    )
+
+                    BasicText(
+                        text = "был(а) недавно",
+                        style = TextStyle(
+                            color = SecondaryText,
+                            fontSize = 12.sp
+                        )
+                    )
+                }
+            }
+
+            // Сообщения
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .verticalScroll(scrollState)
+                    .padding(horizontal = 12.dp, vertical = 16.dp)
+                    .padding(bottom = 90.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                messages.forEach { message ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = if (message.mine) {
+                            Arrangement.End
+                        } else {
+                            Arrangement.Start
+                        }
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .widthIn(max = 290.dp)
+                                .clip(
+                                    RoundedCornerShape(
+                                        topStart = 18.dp,
+                                        topEnd = 18.dp,
+                                        bottomStart = if (message.mine) {
+                                            18.dp
+                                        } else {
+                                            5.dp
+                                        },
+                                        bottomEnd = if (message.mine) {
+                                            5.dp
+                                        } else {
+                                            18.dp
+                                        }
+                                    )
+                                )
+                                .background(
+                                    if (message.mine) {
+                                        Color(0xFF263A50)
+                                    } else {
+                                        Color(0xFF202020)
+                                    }
+                                )
+                                .padding(
+                                    horizontal = 14.dp,
+                                    vertical = 10.dp
+                                )
+                        ) {
+                            BasicText(
+                                text = message.text,
+                                style = TextStyle(
+                                    color = Color.White,
+                                    fontSize = 15.sp
                                 )
                             )
-                            .background(
-                                if (message.mine) {
-                                    Color(0xFFD9FDD3)
-                                } else {
-                                    Color.White
-                                }
-                            )
-                            .padding(horizontal = 14.dp, vertical = 10.dp)
-                    ) {
-                        BasicText(
-                            text = message.text,
-                            style = TextStyle(
-                                color = Color(0xFF202020),
-                                fontSize = 15.sp
-                            )
-                        )
+                        }
                     }
                 }
             }
         }
 
-        // Поле ввода
-        Row(
+        // Стеклянное поле поверх фона
+        LiquidMessageInput(
+            backdrop = backdrop,
+            onSend = { text ->
+                messages.add(ChatMessage(text, true))
+            },
             modifier = Modifier
+                .align(Alignment.BottomCenter)
                 .fillMaxWidth()
                 .navigationBarsPadding()
-                .background(Color(0xFFF3F3F7))
-                .padding(horizontal = 10.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(
-                modifier = Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(24.dp))
-                    .background(Color.White)
-                    .padding(horizontal = 14.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                BasicTextField(
-                    value = input,
-                    onValueChange = { input = it },
-                    modifier = Modifier.weight(1f),
-                    textStyle = TextStyle(
-                        color = MainText,
-                        fontSize = 15.sp
-                    ),
-                    singleLine = false,
-                    maxLines = 4,
-                    decorationBox = { innerTextField ->
-                        Box {
-                            if (input.isEmpty()) {
-                                BasicText(
-                                    text = "Сообщение",
-                                    style = TextStyle(
-                                        color = Color(0xFF99999F),
-                                        fontSize = 15.sp
-                                    )
-                                )
-                            }
-                            innerTextField()
-                        }
-                    }
-                )
-            }
-
-            Spacer(Modifier.width(8.dp))
-
-            Box(
-                modifier = Modifier
-                    .size(46.dp)
-                    .clip(RoundedCornerShape(50))
-                    .background(Accent)
-                    .clickable {
-                        val text = input.trim()
-                        if (text.isNotEmpty()) {
-                            messages.add(ChatMessage(text, true))
-                            input = ""
-                        }
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-                BasicText(
-                    text = "➤",
-                    style = TextStyle(
-                        color = Color.White,
-                        fontSize = 20.sp
-                    )
-                )
-            }
-        }
+                .padding(horizontal = 12.dp)
+                .padding(bottom = 8.dp)
+        )
     }
 }
